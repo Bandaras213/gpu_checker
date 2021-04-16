@@ -60,7 +60,7 @@ public class fetcher {
     static public boolean checkupdate(String version) {
          boolean updateavail = false;
         try {
-            Document document = Jsoup.connect("https://github.com/Bandaras213/gpu_checker/releases/tag/master").get();
+            Document document = Jsoup.connect("https://github.com/Bandaras213/gpu_checker/releases/latest").get();
             String latestrelease = document.select("div.f1.flex-auto.min-width-0.text-normal").text();
             if (!version.equals(latestrelease)) {
                 updateavail = true;

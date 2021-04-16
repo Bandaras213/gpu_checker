@@ -113,7 +113,7 @@ public class mainui {
                     null, options1, null);
             if (result == JOptionPane.YES_OPTION){
             try {
-                URI u = new URI("https://github.com/Bandaras213/gpu_checker/releases/tag/master");
+                URI u = new URI("https://github.com/Bandaras213/gpu_checker/releases/latest");
 
                 Desktop d = Desktop.getDesktop();
                 d.browse(u);
