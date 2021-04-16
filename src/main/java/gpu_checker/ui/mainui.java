@@ -1,11 +1,14 @@
 package main.java.gpu_checker.ui;
 
+import main.java.gpu_checker.fetcher;
+import main.java.gpu_checker.start;
 import main.java.gpu_checker.util;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,14 +17,18 @@ import java.util.concurrent.TimeUnit;
 public class mainui {
 
     private static final DefaultListModel<String> model = new DefaultListModel<>();
-    private static final ArrayList<String> URLs = (ArrayList<String>) util.readfile();
+    private static final ArrayList<String> URLs = util.readfile();
     private static final JLabel label = new JLabel();
+    private static final Integer delay = 10;
 
     public static void main(String[] args) {
 
         JPopupMenu popupmenu = new JPopupMenu();
+        JMenuItem openurl = new JMenuItem("Open in Browser");
         JMenuItem delete = new JMenuItem("Delete");
         JMenuItem clear = new JMenuItem("Clear Selected");
+        popupmenu.add(openurl);
+        popupmenu.addSeparator();
         popupmenu.add(delete);
         popupmenu.add(clear);
 
@@ -31,6 +38,17 @@ public class mainui {
                 if (SwingUtilities.isRightMouseButton(me)) {
                     popupmenu.show(list , me.getX(), me.getY());
                 }
+            }
+        });
+
+        openurl.addActionListener(e -> {
+            try {
+                URI u = new URI(URLs.get(list.getSelectedIndex()));
+
+                Desktop d = Desktop.getDesktop();
+                d.browse(u);
+            } catch (Exception evt) {
+                evt.printStackTrace();
             }
         });
 
@@ -58,15 +76,24 @@ public class mainui {
         button.setBounds(580,235, 100, 20);
         button.addActionListener(actionEvent -> {
             String gettext = text.getText();
-            if (!util.checkifexist(gettext)) {
-                util.addline(gettext);
-                model.addElement(util.urlstringhandling(gettext));
-            } else {
-                JOptionPane.showMessageDialog(myFrame,
-                        gettext + " is already in the List.",
-                        "Duplicate Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+
+                String product = util.urlstringhandling(gettext);
+                if (product.contains("<html>")) {
+                    if (!util.checkifexist(gettext)) {
+                    util.addline(gettext);
+                    model.addElement(product);
+                    } else {
+                        JOptionPane.showMessageDialog(myFrame,
+                                gettext + " is already in the List.",
+                                "Duplicate Warning",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(myFrame,
+                            "Das Produkt wurde nicht vollständig gefunden ist die URL " + gettext + " richtig?",
+                            "Iteminfo Fehlerhaft",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             text.setText("");
         });
 
@@ -77,18 +104,37 @@ public class mainui {
         myFrame.add(label);
         myFrame.add(button);
 
-        starttimer();
+
+        if (fetcher.checkupdate(start.version)) {
+            Object[] options1 = { "Go to Update Page", "Ignore" };
+
+            int result = JOptionPane.showOptionDialog(myFrame, "Es ist ein Update für die Version vefügbar.", "Update vefügbar.",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                    null, options1, null);
+            if (result == JOptionPane.YES_OPTION){
+            try {
+                URI u = new URI("https://github.com/Bandaras213/gpu_checker/releases/tag/master");
+
+                Desktop d = Desktop.getDesktop();
+                d.browse(u);
+            } catch (Exception evt) {
+               evt.printStackTrace();
+            }
+            }
+            starttimer();
+        } else {
+            starttimer();
+        }
     }
 
     private static void starttimer() {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
         Runnable task = mainui::run;
-        executor.scheduleWithFixedDelay(task, 0, 10, TimeUnit.MINUTES);
+        executor.scheduleWithFixedDelay(task, 0, delay, TimeUnit.MINUTES);
     }
 
     private static void run() {
         model.removeAllElements();
-        assert URLs != null;
         if (URLs.size() != 0) {
             ArrayList<String> data = util.urlhandling(URLs);
             for (String datum : data) {
@@ -98,7 +144,7 @@ public class mainui {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable refresh = new Runnable() {
-            int i = 600;
+            int i = delay * 60;
 
             public void run() {
                 String time = String.format("%02d:%02d", i / 60, i % 60);

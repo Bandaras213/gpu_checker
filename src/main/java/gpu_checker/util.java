@@ -34,20 +34,20 @@ public class util {
         System.out.println(m);
     }
 
-    public static Object readfile() {
+    public static ArrayList<String> readfile() {
+        ArrayList<String> list = new ArrayList<>();
 
         try {
         Scanner s = new Scanner(new File(filename));
-        ArrayList<String> list = new ArrayList<>();
         while (s.hasNext()){
             list.add(s.next());
         }
         s.close();
-            return list;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return list;
     }
 
     public static ArrayList<String> urlhandling(ArrayList<?> URLs) {
@@ -121,11 +121,10 @@ public class util {
                 }
             }
             s.close();
-            return false;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return true;
         }
+        return false;
     }
 
     public static void addline(String gettext) {
