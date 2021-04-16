@@ -1,14 +1,18 @@
 package main.java.gpu_checker;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
 
 public class fetcher {
 
     public static String sorter(Document document, String sortidf, String productid) {
-        String name = "";
-        String price = "";
-        String avail = "";
+        String product = "";
+        String name;
+        String price;
+        String stock;
 
         util.checkdirectory();
 
@@ -23,10 +27,20 @@ public class fetcher {
                 price = contentElement.select("div.price").text().replace(" ", "");
                 if (!contentElement.select("div.col-12.p-3.text-center").select("div.font-weight-bold.text-center").text().equals("")) {
                     util.debug("" + contentElement.select("div.col-12.p-3.text-center").select("div.font-weight-bold.text-center").text());
-                    avail = "<font color=red>" + contentElement.select("div.col-12.p-3.text-center").select("div.font-weight-bold.text-center").text() + "</font>";
+                    stock = "<font color=red>" + contentElement.select("div.col-12.p-3.text-center").select("div.font-weight-bold.text-center").text() + "</font>";
                 } else {
                     util.debug("" + contentElement.select("div.col-12.p-3.text-center").select("span.d-flex.justify-content-center.align-items-center").text());
-                    avail = "<font color=green>" + contentElement.select("div.col-12.p-3.text-center").select("span.d-flex.justify-content-center.align-items-center").text() + "</font>";
+                    if (contentElement.select("div.col-12.p-3.text-center").select("span.d-flex.justify-content-center.align-items-center").text().contains("Lieferbar in")) {
+                        stock = "<font color=orange>" + contentElement.select("div.col-12.p-3.text-center").select("span.d-flex.justify-content-center.align-items-center").text() + "</font>";
+                    } else {
+                        stock = "<font color=green>" + contentElement.select("div.col-12.p-3.text-center").select("span.d-flex.justify-content-center.align-items-center").text() + "</font>";
+                    }
+                }
+
+                if (name.length() == 0 || price.length() == 0 || stock.length() == 0) {
+                    product = "ERROR in Daten";
+                } else {
+                    product = "<html>" + name + "<br />" + price + "<br />" +  stock + "</html>";
                 }
 
                 /*try {
@@ -40,7 +54,21 @@ public class fetcher {
                 break;
         }
         util.debug("" + sortidf);
-        return "<html>" + name + "<br />" + price + "<br />" +  avail + "</html>";
+        return product;
+    }
+
+    static public boolean checkupdate(String version) {
+         boolean updateavail = false;
+        try {
+            Document document = Jsoup.connect("https://github.com/Bandaras213/gpu_checker/releases/tag/master").get();
+            String latestrelease = document.select("div.f1.flex-auto.min-width-0.text-normal").text();
+            if (!version.equals(latestrelease)) {
+                updateavail = true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return updateavail;
     }
 
 }
