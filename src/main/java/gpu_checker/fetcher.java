@@ -38,7 +38,7 @@ public class fetcher {
                 }
 
                 if (name.length() == 0 || price.length() == 0 || stock.length() == 0) {
-                    product = "ERROR in Daten";
+                    product = "<html><font color=red> ERROR </font> " + "in Daten oder Seite, Manuell Prüfen oder Löschen. </html>";
                 } else {
                     product = "<html>" + name + "<br />" + price + "<br />" +  stock + "</html>";
                 }

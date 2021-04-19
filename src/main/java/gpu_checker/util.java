@@ -91,6 +91,11 @@ public class util {
         String productid = null;
 
         try {
+            if (!gettext.contains("https:") || !gettext.contains("http:") || !gettext.contains("www.")) {
+                productinfo = "ERROR";
+                return productinfo;
+            }
+
             util.debug(gettext);
 
             Document document = Jsoup.connect(gettext).get();

@@ -2,6 +2,8 @@ package main.java.gpu_checker.ui;
 
 import main.java.gpu_checker.fetcher;
 import main.java.gpu_checker.start;
+import main.java.gpu_checker.ui.constructor.buttoncon;
+import main.java.gpu_checker.ui.constructor.mainframe;
 import main.java.gpu_checker.util;
 
 import javax.swing.*;
@@ -66,49 +68,47 @@ public class mainui {
         text.setBounds(5,235, 400, 50);
         text.setSize(350, 20);
 
-        MyFrame myFrame = new MyFrame();
-        myFrame.add(popupmenu);
-        myFrame.add(scrollpane);
-        myFrame.add(text);
+        mainframe main = new mainframe("GPU Checker", JFrame.EXIT_ON_CLOSE, 700, 300,
+                false, new Color(44, 49, 60), null);
+        main.add(popupmenu);
+        main.add(scrollpane);
+        main.add(text);
 
-        JButton button = new JButton();
-        button.setText("Get Items");
-        button.setBounds(580,235, 100, 20);
+        buttoncon button = new buttoncon("Get Item", new Rectangle(580, 235, 100, 20));
         button.addActionListener(actionEvent -> {
             String gettext = text.getText();
 
-                String product = util.urlstringhandling(gettext);
-                if (product.contains("<html>")) {
-                    if (!util.checkifexist(gettext)) {
+            String product = util.urlstringhandling(gettext);
+            if (product.contains("ERROR")) {
+                JOptionPane.showMessageDialog(main,
+                        "Das Produkt wurde nicht vollständig gefunden ist die URL " + gettext + " richtig?",
+                        "Iteminfo Fehlerhaft",
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                if (!util.checkifexist(gettext)) {
                     util.addline(gettext);
                     model.addElement(product);
-                    } else {
-                        JOptionPane.showMessageDialog(myFrame,
-                                gettext + " is already in the List.",
-                                "Duplicate Warning",
-                                JOptionPane.WARNING_MESSAGE);
-                    }
                 } else {
-                    JOptionPane.showMessageDialog(myFrame,
-                            "Das Produkt wurde nicht vollständig gefunden ist die URL " + gettext + " richtig?",
-                            "Iteminfo Fehlerhaft",
+                    JOptionPane.showMessageDialog(main,
+                            gettext + " is already in the List.",
+                            "Duplicate Warning",
                             JOptionPane.WARNING_MESSAGE);
                 }
+            }
             text.setText("");
         });
-
 
         label.setBounds(480,220, 100, 50);
         label.setForeground(Color.WHITE);
 
-        myFrame.add(label);
-        myFrame.add(button);
+        main.add(label);
+        main.add(button);
 
 
         if (fetcher.checkupdate(start.version)) {
             Object[] options1 = { "Go to Update Page", "Ignore" };
 
-            int result = JOptionPane.showOptionDialog(myFrame, "Es ist ein Update für die Version vefügbar.", "Update vefügbar.",
+            int result = JOptionPane.showOptionDialog(main, "Es ist ein Update für die Version vefügbar.", "Update vefügbar.",
                     JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, options1, null);
             if (result == JOptionPane.YES_OPTION){
