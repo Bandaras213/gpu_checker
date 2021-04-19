@@ -2,7 +2,6 @@ package main.java.gpu_checker;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -136,10 +135,9 @@ public class util {
 
     public static String searchhandler(String sortidf, String gettext) {
         ArrayList<Integer> indexint = new ArrayList<Integer>();
-        String url = gettext;
         char character = '-';
 
-        String s = url.substring(url.lastIndexOf("/") + 1);
+        String s = gettext.substring(gettext.lastIndexOf("/") + 1);
 
         for(int i = 0; i < s.length(); i++){
             if(s.charAt(i) == character){

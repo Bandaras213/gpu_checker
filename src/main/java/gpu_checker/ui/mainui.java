@@ -1,7 +1,5 @@
 package main.java.gpu_checker.ui;
 
-import main.java.gpu_checker.fetcher;
-import main.java.gpu_checker.start;
 import main.java.gpu_checker.ui.constructor.buttoncon;
 import main.java.gpu_checker.ui.constructor.mainframe;
 import main.java.gpu_checker.util;
@@ -23,7 +21,7 @@ public class mainui {
     private static final JLabel label = new JLabel();
     private static final Integer delay = 10;
 
-    public static void main(String[] args) {
+    public static void main(String[] args, boolean updateavail) {
 
         JPopupMenu popupmenu = new JPopupMenu();
         JMenuItem openurl = new JMenuItem("Open in Browser");
@@ -105,27 +103,24 @@ public class mainui {
         main.add(label);
         main.add(button);
 
-
-        if (fetcher.checkupdate(start.version)) {
+        if (updateavail) {
             Object[] options1 = { "Go to Update Page", "Ignore" };
 
             int result = JOptionPane.showOptionDialog(main, "Es ist ein Update für die Version vefügbar.", "Update vefügbar.",
                     JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, options1, null);
             if (result == JOptionPane.YES_OPTION){
-            try {
-                URI u = new URI("https://github.com/Bandaras213/gpu_checker/releases/latest");
+                try {
+                    URI u = new URI("https://github.com/Bandaras213/gpu_checker/releases/latest");
 
-                Desktop d = Desktop.getDesktop();
-                d.browse(u);
-            } catch (Exception evt) {
-               evt.printStackTrace();
+                    Desktop d = Desktop.getDesktop();
+                    d.browse(u);
+                } catch (Exception evt) {
+                    evt.printStackTrace();
+                }
             }
-            }
-            starttimer();
-        } else {
-            starttimer();
         }
+        starttimer();
     }
 
     private static void starttimer() {

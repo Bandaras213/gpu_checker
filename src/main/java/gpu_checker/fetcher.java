@@ -103,12 +103,16 @@ public class fetcher {
         return product;
     }
 
-    static public boolean checkupdate(String version) {
+    static public boolean checkupdate(int version) {
+        int versionnew;
          boolean updateavail = false;
         try {
             Document document = Jsoup.connect("https://github.com/Bandaras213/gpu_checker/releases/latest").get();
             String latestrelease = document.select("div.f1.flex-auto.min-width-0.text-normal").text();
-            if (!version.equals(latestrelease)) {
+            latestrelease = latestrelease.replace("Version ", "").replaceAll("\\.", "");
+            versionnew = Integer.parseInt(latestrelease);
+
+            if (versionnew > version) {
                 updateavail = true;
             }
         } catch (IOException e) {
