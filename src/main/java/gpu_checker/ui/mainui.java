@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class mainui {
 
     private static final DefaultListModel<String> model = new DefaultListModel<>();
-    private static final ArrayList<String> URLs = util.readfile();
+    private static ArrayList<String> URLs = util.readfile();
     private static final JLabel label = new JLabel();
     private static final Integer delay = 10;
 
@@ -88,6 +88,7 @@ public class mainui {
                 if (!util.checkifexist(gettext)) {
                     util.addline(gettext);
                     model.addElement(product);
+                    URLs = util.readfile();
                 } else {
                     JOptionPane.showMessageDialog(main,
                             gettext + " is already in the List.",

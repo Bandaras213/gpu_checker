@@ -12,5 +12,4 @@ public class start {
         util.checkdirectory();
         mainui.main(args);
     }
-
 }

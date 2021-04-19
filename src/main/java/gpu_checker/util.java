@@ -2,6 +2,7 @@ package main.java.gpu_checker;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class util {
         int counter = 0;
         String sortidf = null;
         String productid = null;
+        Document document = null;
 
         if (URLs.size() != 0) {
             do {
@@ -63,16 +65,21 @@ public class util {
 
                     util.debug(urlName);
 
-                    Document document = Jsoup.connect(urlName).get();
-
                     if (urlName.toLowerCase().contains("alternate")) {
                         sortidf = "alternate";
                         productid = urlName.substring(urlName.lastIndexOf("/") + 1);
+                        document = Jsoup.connect(urlName).get();
                         util.debug("" + productid);
                     }
 
                     if (urlName.toLowerCase().contains("amazon")) {
                         sortidf = "amazon";
+                    }
+
+                    if (urlName.toLowerCase().contains("caseking")) {
+                        sortidf = "caseking";
+                        String searchurl = "https://www.caseking.de/search?sSearch=";
+                        document = Jsoup.connect(searchurl + util.searchhandler(sortidf, urlName)).get();
                     }
 
                     productinfo.add(fetcher.sorter(document, sortidf, productid));
@@ -89,25 +96,35 @@ public class util {
         String productinfo = null;
         String sortidf = null;
         String productid = null;
+        Document document = null;
 
         try {
-            if (!gettext.contains("https:") || !gettext.contains("http:") || !gettext.contains("www.")) {
-                productinfo = "ERROR";
-                return productinfo;
+            if (!gettext.contains("https:")) {
+                if (!gettext.contains("http:")) {
+                    if (!gettext.contains("www.")) {
+                        productinfo = "ERROR";
+                        return productinfo;
+                    }
+            }
             }
 
             util.debug(gettext);
-
-            Document document = Jsoup.connect(gettext).get();
 
             if (gettext.toLowerCase().contains("alternate")) {
                 sortidf = "alternate";
                 productid = gettext.substring(gettext.lastIndexOf("/") + 1);
                 util.debug("" + productid);
+                document = Jsoup.connect(gettext).get();
             }
 
             if (gettext.toLowerCase().contains("amazon")) {
                 sortidf = "amazon";
+            }
+
+            if (gettext.toLowerCase().contains("caseking")) {
+                sortidf = "caseking";
+                String searchurl = "https://www.caseking.de/search?sSearch=";
+                document = Jsoup.connect(searchurl + util.searchhandler(sortidf, gettext)).get();
             }
 
             productinfo = fetcher.sorter(document, sortidf, productid);
@@ -115,6 +132,25 @@ public class util {
             e.printStackTrace();
         }
         return productinfo;
+    }
+
+    public static String searchhandler(String sortidf, String gettext) {
+        ArrayList<Integer> indexint = new ArrayList<Integer>();
+        String url = gettext;
+        char character = '-';
+
+        String s = url.substring(url.lastIndexOf("/") + 1);
+
+        for(int i = 0; i < s.length(); i++){
+            if(s.charAt(i) == character){
+                indexint.add(i);
+            }
+        }
+
+        s = s.substring(0, indexint.get(indexint.size() - 2));
+        s = s.replaceAll("-", " ");
+
+        return s;
     }
 
     public static boolean checkifexist(String gettext) {
