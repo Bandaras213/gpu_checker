@@ -84,9 +84,13 @@ public class mainui {
                         JOptionPane.WARNING_MESSAGE);
             } else {
                 if (!util.checkifexist(gettext)) {
-                    util.addline(gettext);
-                    model.addElement(product);
-                    URLs = util.readfile();
+                    Runnable addnewitem = () -> {
+                        util.addline(gettext);
+                        model.addElement(product);
+                        URLs = util.readfile();
+                    };
+                    Thread t = new Thread(addnewitem);
+                    t.start();
                 } else {
                     JOptionPane.showMessageDialog(main,
                             gettext + " is already in the List.",
